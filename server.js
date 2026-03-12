@@ -8,9 +8,12 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.static('public'));
 app.use(express.json());
 app.use(cors());
+
+// Serve static files from the React app
+app.use(express.static(path.join(__dirname, 'client/dist')));
+app.use(express.static('public'));
 
 const BOLNA_API_KEY = process.env.BOLNA_API_KEY;
 const BOLNA_API_URL = 'https://api.bolna.dev/call';
@@ -1008,6 +1011,10 @@ app.get('/api/executions', async (req, res) => {
         console.error('Server Error:', error);
         res.status(500).json({ success: false, error: 'Internal server error while fetching from Bolna.' });
     }
+});
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/dist', 'index.html'));
 });
 
 app.listen(PORT, () => {
